@@ -177,8 +177,8 @@ public class Schedule extends Activity implements ActionBar.TabListener {
             super(fm);
             for (int i = 0; i < 7; i++) {
                 fragments.add(PlaceholderFragment.newInstance(i + 1));
-//                fragments.get(i).daytimes = tm.getUserSchedule().getBegins(i + 1, ThermostatSchedule.DAY);
-//                fragments.get(i).nighttimes = tm.getUserSchedule().getBegins(i + 1, ThermostatSchedule.NIGHT);
+//                fragments.get(i).daytimes = thermostatModel.getUserSchedule().getBegins(i + 1, ThermostatSchedule.DAY);
+//                fragments.get(i).nighttimes = thermostatModel.getUserSchedule().getBegins(i + 1, ThermostatSchedule.NIGHT);
             }
         }
 
