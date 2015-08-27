@@ -16,6 +16,9 @@ public class NewThermostatModel {
     private double dayTemp;
     private double nightTemp;
     private double currentTemp;
+    /**
+     * period of {@code DAY}
+     */
     private int currentPeriod;
     private int day;
     private int hour;
@@ -54,7 +57,11 @@ public class NewThermostatModel {
             changeMode();
         }
 
-        //TODO: if (locked && needTempUpdate) { changePeriod() }
+        if (schedule.getNextDayPeriod(day, currentPeriod) != null) {
+            currentPeriod++;
+        } else {
+            currentPeriod = 0;
+        }
     }
 
     private void changeMode() {
@@ -87,6 +94,10 @@ public class NewThermostatModel {
         this.dayTemp = dayTemp;
     }
 
+    public int getCurrentPeriod() {
+        return currentPeriod;
+    }
+
     public NewThermostatModel(NewThermostatSchedule schedule) {
         this.schedule = schedule;
         locked = false;
@@ -97,6 +108,7 @@ public class NewThermostatModel {
         dayTemp = 18;
         nightTemp = 15;
         currentTemp = nightTemp;
+        currentPeriod = 0;
         timer.start();
     }
 
@@ -124,12 +136,11 @@ public class NewThermostatModel {
     }
 
     public boolean removePeriod(int dayOfWeek, int number) {
+        // updateCurrentPeriod() ?
         return schedule.removePeriod(dayOfWeek, number);
     }
 
     public Pair<HourMinute, HourMinute> getNextDayPeriod(int dayOfWeek, int currentPeriod) {
         return schedule.getNextDayPeriod(dayOfWeek, currentPeriod);
     }
-
-    //TODO: method for calculating current period
 }
