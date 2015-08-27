@@ -26,4 +26,28 @@ public class HourMinute {
         }
         return false;
     }
+
+    public HourMinute add(int minute) {
+        this.minute += minute;
+        if (this.minute == 60) {
+            this.minute = 0;
+            hour++;
+            if (hour == 24) {
+                hour = 0;
+            }
+        }
+        return this;
+    }
+
+    public HourMinute subtract(int minute) {
+        this.minute -= minute;
+        if (this.minute < 0) {
+            this.minute = 60 + this.minute;
+            hour--;
+            if (hour < 0) {
+                hour = 23;
+            }
+        }
+        return this;
+    }
 }

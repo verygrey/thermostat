@@ -140,7 +140,12 @@ public class NewThermostatModel {
         return schedule.removePeriod(dayOfWeek, number);
     }
 
+    @Deprecated
     public Pair<HourMinute, HourMinute> getNextDayPeriod(int dayOfWeek, int currentPeriod) {
         return schedule.getNextDayPeriod(dayOfWeek, currentPeriod);
+    }
+
+    public Pair<HourMinute, HourMinute> getNightPeriod(int dayOfWeek, int currentPeriod) {
+        return schedule.getNightPeriod(dayOfWeek, currentPeriod);
     }
 }

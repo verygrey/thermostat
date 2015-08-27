@@ -17,7 +17,7 @@ public class NewThermostatSchedule {
         schedule = new ArrayList<>(7);
         for (ArrayList<Pair<HourMinute,HourMinute>> dayOfWeek : schedule) {
             dayOfWeek = new ArrayList<>(5);
-            dayOfWeek.add(new Pair<>(new HourMinute(0, 0), new HourMinute(23, 59)));
+            //dayOfWeek.add(new Pair<>(new HourMinute(0, 0), new HourMinute(23, 59)));
         }
     }
 
@@ -105,15 +105,33 @@ public class NewThermostatSchedule {
     }
 
     /**
-     * @param dayOfWeek
-     * @param currentPeriod
      * @return null if there are no period day periods today
      */
+    @Deprecated
     public Pair<HourMinute, HourMinute> getNextDayPeriod(int dayOfWeek, int currentPeriod) {
         if (schedule.get(dayOfWeek).size() > currentPeriod) {
             return schedule.get(dayOfWeek).get(currentPeriod + 1);
         } else {
             return null;
         }
+    }
+
+    /**
+     * @return null if there are no period day periods today
+     */
+    private HourMinute getBeginOfNextDayPeriod(int dayOfWeek, int currentPeriod) {
+        if (getNextDayPeriod(dayOfWeek, currentPeriod) != null) {
+            return getNextDayPeriod(dayOfWeek, currentPeriod).first;
+        }
+        return null;
+    }
+
+    /**
+     * @return period of night after current day period
+     */
+    public Pair<HourMinute, HourMinute> getNightPeriod(int dayOfWeek, int currentPeriod) {
+        HourMinute begin = schedule.get(dayOfWeek).get(currentPeriod).second;
+        HourMinute end = getBeginOfNextDayPeriod(dayOfWeek, currentPeriod);
+        return new Pair<>(begin.add(1), end.subtract(1));
     }
 }
