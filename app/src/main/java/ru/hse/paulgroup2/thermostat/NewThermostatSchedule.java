@@ -17,6 +17,7 @@ public class NewThermostatSchedule {
         schedule = new ArrayList<>(7);
         for (ArrayList<Pair<HourMinute,HourMinute>> dayOfWeek : schedule) {
             dayOfWeek = new ArrayList<>(5);
+            dayOfWeek.add(new Pair<>(new HourMinute(0, 0), new HourMinute(23, 59)));
         }
     }
 
@@ -32,6 +33,9 @@ public class NewThermostatSchedule {
     public boolean removePeriod(int dayOfWeek, int number) {
         if (schedule.get(dayOfWeek).size() < number) {
             schedule.get(dayOfWeek).remove(number);
+            if (schedule.get(dayOfWeek).isEmpty()) {
+                schedule.get(dayOfWeek).add(new Pair<>(new HourMinute(0, 0), new HourMinute(23, 59)));
+            }
             return true;
         }
         return false;
@@ -84,7 +88,7 @@ public class NewThermostatSchedule {
         return true;
     }
 
-    public boolean needUpdate(int dayOfWeek, HourMinute currentTime, int mode) {
+    public boolean needTempUpdate(int dayOfWeek, HourMinute currentTime, int mode) {
         boolean insidePeriod = false;
         for (Pair<HourMinute, HourMinute> period : schedule.get(dayOfWeek)) {
             if (currentTime.insidePeriod(period.first, period.second)) {
@@ -98,5 +102,18 @@ public class NewThermostatSchedule {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param dayOfWeek
+     * @param currentPeriod
+     * @return null if there are no period day periods today
+     */
+    public Pair<HourMinute, HourMinute> getNextDayPeriod(int dayOfWeek, int currentPeriod) {
+        if (schedule.get(dayOfWeek).size() > currentPeriod) {
+            return schedule.get(dayOfWeek).get(currentPeriod + 1);
+        } else {
+            return null;
+        }
     }
 }
