@@ -11,7 +11,7 @@ import java.util.LinkedList;
  */
 public class ThermostatSchedule implements Serializable{
 
-    private static final long serialVersionUID = -1096217523172222472L;
+//    private static final long serialVersionUID = -1096217523172222472L;
 
     double daytemp;
     double nighttemp;

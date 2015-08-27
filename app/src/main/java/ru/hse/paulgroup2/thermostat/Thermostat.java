@@ -19,16 +19,16 @@ public class Thermostat extends Activity {
     ImageView currentMode;
     TextView currentTemp, userTemp, dayTemp, nightTemp, currentTime;
 
-    ThermostatModel tm;
-    ThermostatController tc;
+    ThermostatModel thermostatModel;
+    ThermostatController thermostatController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thermostat);
 
-        tm = new ThermostatModel();
-        tc = new ThermostatController(tm);
+        thermostatModel = new ThermostatModel();
+        thermostatController = new ThermostatController(thermostatModel);
 
         currentMode = (ImageView) findViewById(R.id.currentmode);
         currentTemp = (TextView) findViewById(R.id.currenttemp);
@@ -56,20 +56,21 @@ public class Thermostat extends Activity {
     private Runnable timeupdateUI = new Runnable() {
         @Override
         public void run() {
-            if (!tm.isLocked()) {
-                if (tm.isUser()) {
+            if (!thermostatModel.isLocked()) {
+                if (thermostatModel.isUser()) {
                     currentMode.setImageResource(R.drawable.biguserpic);
                 } else {
-                    if (tm.isDay()) {
+                    if (thermostatModel.isDay()) {
                         currentMode.setImageResource(R.drawable.bigsunpic);
                     } else {
                         currentMode.setImageResource(R.drawable.bigmoonpic);
                     }
                 }
             }
-            currentTemp.setText(dtos(tm.getCurrentTemp()));
-            System.out.println("current model " + tm.hiddenServer.currentMode);
-            currentTime.setText("NOW "+tm.hiddenServer.hour+":"+tm.hiddenServer.minute);
+            currentTemp.setText(dtos(thermostatModel.getCurrentTemp()));
+            System.out.println("current model " + thermostatModel.hiddenServer.currentMode);
+            currentTime.setText(thermostatModel.hiddenServer.day + " "+
+                    thermostatModel.hiddenServer.hour+":"+ thermostatModel.hiddenServer.minute);
         }
     };
 
@@ -77,18 +78,18 @@ public class Thermostat extends Activity {
         //Todo: add choose temp
         Toast.makeText(this, "UNFORTUNATELY NOT WORKING\n WE BROKEN IT ._.\nTHIS BUTTON SET RANDOM TEMPERATURE", Toast.LENGTH_LONG).show();
         double temp = (double)((int)(new Random().nextDouble() * 300)) / 10;
-        tm.setUserTemp(temp);
+        thermostatModel.setUserTemp(temp);
         userTemp.setText(dtos(temp));
     }
 
     public void relockTemp(View view) {
-        if (tm.isUser()) {
-            if (tm.isLocked()) {
-                tm.setLocked(false);
+        if (thermostatModel.isUser()) {
+            if (thermostatModel.isLocked()) {
+                thermostatModel.setLocked(false);
                 currentMode.setImageResource(R.drawable.biguserpic);
                 Toast.makeText(this, "Temp is unlocked", Toast.LENGTH_SHORT).show();
             } else {
-                tm.setLocked(true);
+                thermostatModel.setLocked(true);
                 currentMode.setImageResource(R.drawable.biglockpic);
                 Toast.makeText(this, "Temp is locked", Toast.LENGTH_SHORT).show();
             }
@@ -96,39 +97,39 @@ public class Thermostat extends Activity {
     }
 
     public void initFields() {
-        if (tm.isDay()) {
+        if (thermostatModel.isDay()) {
             currentMode.setImageResource(R.drawable.bigsunpic);
         } else {
             currentMode.setImageResource(R.drawable.bigmoonpic);
         }
-        currentTemp.setText(dtos(tm.getCurrentTemp()));
-        userTemp.setText(dtos(tm.getUserTemp()));
-        dayTemp.setText(dtos(tm.getDayTemp()));
-        nightTemp.setText(dtos(tm.getNightTemp()));
+        currentTemp.setText(dtos(thermostatModel.getCurrentTemp()));
+        userTemp.setText(dtos(thermostatModel.getUserTemp()));
+        dayTemp.setText(dtos(thermostatModel.getDayTemp()));
+        nightTemp.setText(dtos(thermostatModel.getNightTemp()));
     }
 
     public void onoffUserTemp(View view) {
-        if (tm.isUser()) {
-            tm.setUser(false);
+        if (thermostatModel.isUser()) {
+            thermostatModel.setUser(false);
             Toast.makeText(this, "User mode disabled", Toast.LENGTH_SHORT).show();
         } else {
-            if (!tm.isLocked()) {
-                tm.setUser(true);
+            if (!thermostatModel.isLocked()) {
+                thermostatModel.setUser(true);
                 Toast.makeText(this, "User mode enabled", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     public void exportSchedule(View view) {
-        tc.exportScheduleToServer();
+        thermostatController.exportScheduleToServer();
         Toast.makeText(this, "Schedule is exported", Toast.LENGTH_SHORT).show();
     }
 
     public void importSchedule(View view) {
-        tc.importScheduleFromServer();
-        userTemp.setText(dtos(tm.getUserTemp()));
-        dayTemp.setText(dtos(tm.getDayTemp()));
-        nightTemp.setText(dtos(tm.getNightTemp()));
+        thermostatController.importScheduleFromServer();
+        userTemp.setText(dtos(thermostatModel.getUserTemp()));
+        dayTemp.setText(dtos(thermostatModel.getDayTemp()));
+        nightTemp.setText(dtos(thermostatModel.getNightTemp()));
         Toast.makeText(this, "Schedule is imported", Toast.LENGTH_SHORT).show();
     }
 
@@ -166,7 +167,7 @@ public class Thermostat extends Activity {
     public void setSchedule(View view) {
         Toast.makeText(this, "UNFORTUNATELY NOT WORKING\n WE BROKEN IT ._.", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(Thermostat.this, Schedule.class);
-        intent.putExtra("SCHEDULE", tm.getUserSchedule());
+        intent.putExtra("SCHEDULE", thermostatModel.getUserSchedule());
         startActivity(intent);
     }
 }
