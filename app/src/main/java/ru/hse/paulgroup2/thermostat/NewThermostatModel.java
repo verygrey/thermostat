@@ -2,6 +2,7 @@ package ru.hse.paulgroup2.thermostat;
 
 import android.util.Pair;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
@@ -147,5 +148,9 @@ public class NewThermostatModel {
 
     public Pair<HourMinute, HourMinute> getNightPeriod(int dayOfWeek, int currentPeriod) {
         return schedule.getNightPeriod(dayOfWeek, currentPeriod);
+    }
+
+    public ArrayList<Pair<HourMinute, HourMinute>> getFullSchedule(int day) {
+        return schedule.getFullSchedule(day);
     }
 }
