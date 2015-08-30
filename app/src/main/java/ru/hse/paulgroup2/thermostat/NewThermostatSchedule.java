@@ -17,7 +17,7 @@ public class NewThermostatSchedule {
         schedule = new ArrayList<>(7);
         for (ArrayList<Pair<HourMinute,HourMinute>> dayOfWeek : schedule) {
             dayOfWeek = new ArrayList<>(5);
-            dayOfWeek.add(new Pair<>(new HourMinute(0, 0), new HourMinute(23, 59)));
+            //dayOfWeek.add(new Pair<>(new HourMinute(0, 0), new HourMinute(23, 59)));
         }
     }
 
@@ -45,7 +45,16 @@ public class NewThermostatSchedule {
         if (daySchedule.size() < 2) {
             return;
         }
-        // TODO: sort by dayBegin
+
+        Pair<HourMinute, HourMinute> key;
+        int i, j;
+        for (i = 1; i < daySchedule.size(); i++) {
+            key = daySchedule.get(i);
+            for (j = i - 1; j >= 0 && key.first.isBetter(daySchedule.get(j).first); j--) {
+                daySchedule.set(j + 1, daySchedule.get(j));
+            }
+            daySchedule.set(j + 1, key);
+        }
     }
 
     // only for sorted
@@ -105,8 +114,6 @@ public class NewThermostatSchedule {
     }
 
     /**
-     * @param dayOfWeek
-     * @param currentPeriod
      * @return null if there are no period day periods today
      */
     public Pair<HourMinute, HourMinute> getNextDayPeriod(int dayOfWeek, int currentPeriod) {
@@ -115,5 +122,44 @@ public class NewThermostatSchedule {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @return null if there are no period day periods today
+     */
+    private HourMinute getBeginOfNextDayPeriod(int dayOfWeek, int currentPeriod) {
+        if (getNextDayPeriod(dayOfWeek, currentPeriod) != null) {
+            return getNextDayPeriod(dayOfWeek, currentPeriod).first;
+        }
+        return null;
+    }
+
+    /**
+     * @return period of night after current day period
+     */
+    public Pair<HourMinute, HourMinute> getNightPeriod(int dayOfWeek, int currentPeriod) {
+        HourMinute begin = schedule.get(dayOfWeek).get(currentPeriod).second;
+        HourMinute end = getBeginOfNextDayPeriod(dayOfWeek, currentPeriod);
+        return new Pair<>(begin.add(1), end.subtract(1));
+    }
+
+    /**
+     * Common schedule is without nights because it is easier way to keep and calculate schedule,
+     * for example sorting
+     * This schedule seems like day,night, day, night, ... , day, night
+     * @return null if schedule is empty
+     */
+    public ArrayList<Pair<HourMinute, HourMinute>> getFullSchedule(int day) {
+        if (schedule.size() == 0) {
+            return null;
+        }
+        ArrayList<Pair<HourMinute, HourMinute>> fullSchedule = new ArrayList<>();
+        int period = 0;
+        do {
+            fullSchedule.add(schedule.get(day).get(period));
+            fullSchedule.add(getNightPeriod(day, period));
+            period++;
+        } while (period < schedule.size());
+        return fullSchedule;
     }
 }
