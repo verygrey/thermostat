@@ -162,7 +162,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="7"
-        android:weightSum="9"
+        android:weightSum="6"
         android:orientation="horizontal"
         >
 
@@ -171,7 +171,7 @@
             android:layout_height="match_parent"
             android:src="@drawable/calendarpic"
             android:textSize="20sp"
-            android:layout_weight="3"
+            android:layout_weight="4"
             android:gravity="center"
             android:onClick="setSchedule"
 
@@ -184,20 +184,9 @@
             android:src="@drawable/biglockpic"
             android:text="LOCK"
             android:textSize="20sp"
-            android:layout_weight="3"
+            android:layout_weight="2"
             android:gravity="center"
             android:onClick="changeVacation"
-            />
-
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/editpic"
-            android:text="EDIT"
-            android:scaleType="fitCenter"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:onClick="setNewUserTemp"
             />
 
     </LinearLayout>
