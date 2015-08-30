@@ -133,48 +133,26 @@
 
                 <ImageButton
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
                     android:text="USER"
                     android:src="@drawable/biguserpic"
                     android:textSize="30dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:onClick="onoffUserTemp"
+                    android:onClick="onUserTemp"
                     />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/usertemp"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
+                    android:layout_height="0dp"
+                    android:text="50.0 C"
+                    android:textSize="20sp"
                     android:layout_weight="1"
-                    android:weightSum="12"
-                    >
-
-                    <TextView
-                        android:id="@+id/usertemp"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:text="50.0 C"
-                        android:textSize="20sp"
-                        android:layout_weight="7"
-                        android:gravity="center"
-                        />
-
-                    <ImageButton
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/editpic"
-                        android:text="EDIT"
-                        android:scaleType="fitCenter"
-                        android:layout_weight="5"
-                        android:gravity="center"
-                        android:onClick="setNewUserTemp"
-                        />
+                    android:gravity="center"
+                    />
 
                 </LinearLayout>
-
-            </LinearLayout>
-
 
         </LinearLayout>
 
@@ -188,38 +166,15 @@
         android:orientation="horizontal"
         >
 
-         <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/exportpic"
-            android:text="EXPORT"
-            android:textSize="20sp"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:onClick="exportSchedule"
-
-            />
-
         <ImageButton
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:src="@drawable/calendarpic"
             android:textSize="20sp"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:gravity="center"
             android:onClick="setSchedule"
 
-            />
-
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/importpic"
-            android:text="IMPORT"
-            android:textSize="20sp"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:onClick="importSchedule"
             />
 
         <ImageButton
@@ -231,8 +186,20 @@
             android:textSize="20sp"
             android:layout_weight="3"
             android:gravity="center"
-            android:onClick="relockTemp"
+            android:onClick="changeVacation"
             />
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/editpic"
+            android:text="EDIT"
+            android:scaleType="fitCenter"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:onClick="setNewUserTemp"
+            />
+
     </LinearLayout>
 
 </LinearLayout>

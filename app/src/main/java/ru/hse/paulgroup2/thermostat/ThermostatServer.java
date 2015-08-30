@@ -14,7 +14,7 @@ public class ThermostatServer implements Serializable{
 
     double futureTemp;
 //    double oldTemp;
-//    double currentTemp;
+//    double currentTempView;
     double userTemp;
 
     int oldMode;

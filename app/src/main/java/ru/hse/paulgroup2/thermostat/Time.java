@@ -1,25 +1,32 @@
 package ru.hse.paulgroup2.thermostat;
 
+import java.util.Calendar;
+
 /**
  * Created by Ivan on 26.08.2015.
  */
-public class HourMinute {
+public class Time {
     private int hour;
     private int minute;
 
-    public HourMinute(int hour, int minute) {
+    public Time(Calendar calendar) {
+        this.hour = calendar.get(Calendar.HOUR);
+        this.minute = calendar.get(Calendar.MINUTE);
+    }
+
+    public Time(int hour, int minute) {
         this.hour = hour;
         this.minute = minute;
     }
 
-    public boolean isBetter(HourMinute other) {
+    public boolean isBetter(Time other) {
         if ((this.minute + this.hour * 60) > (other.minute + other.hour * 60)) {
             return true;
         }
         return false;
     }
 
-    public boolean insidePeriod(HourMinute begin, HourMinute end) {
+    public boolean insidePeriod(Time begin, Time end) {
         if ((hour * 60 + minute) >= (begin.hour * 60 + begin.minute) &&
                 (hour * 60 + minute) <= (end.hour * 60 + end.minute)) {
             return true;
@@ -27,7 +34,7 @@ public class HourMinute {
         return false;
     }
 
-    public HourMinute add(int minute) {
+    public Time add(int minute) {
         this.minute += minute;
         if (this.minute == 60) {
             this.minute = 0;
@@ -39,7 +46,7 @@ public class HourMinute {
         return this;
     }
 
-    public HourMinute subtract(int minute) {
+    public Time subtract(int minute) {
         this.minute -= minute;
         if (this.minute < 0) {
             this.minute = 60 + this.minute;
