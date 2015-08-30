@@ -13,7 +13,7 @@ public class NewThermostatSchedule {
 
     private ArrayList<ArrayList<Pair<HourMinute,HourMinute>>> schedule; // 7 days, 5 periods, dayBegin(hour-min)-dayEnd(hour-min)
 
-    NewThermostatSchedule() {
+    public NewThermostatSchedule() {
         schedule = new ArrayList<>(7);
         for (ArrayList<Pair<HourMinute,HourMinute>> dayOfWeek : schedule) {
             dayOfWeek = new ArrayList<>(5);
