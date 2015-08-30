@@ -27,13 +27,12 @@ public class NewThermostatModel {
     private int currentMode;
     private boolean locked;
 
-    private Thread timer = new Thread(()->{
-        while(!Thread.currentThread().isInterrupted()) {
+    private Thread timer = new Thread(() -> {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 TimeUnit.MILLISECONDS.sleep(200);
                 tick();
-            }
-            catch (InterruptedException ex) {
+            } catch (InterruptedException ex) {
                 System.out.println("Internal thread in Timer was interrupted");
                 break;
             }
@@ -57,12 +56,6 @@ public class NewThermostatModel {
         if (!locked && schedule.needTempUpdate(day, new HourMinute(hour, minute), currentMode)) {
             changeMode();
         }
-
-        if (schedule.getNextDayPeriod(day, currentPeriod) != null) {
-            currentPeriod++;
-        } else {
-            currentPeriod = 0;
-        }
     }
 
     private void changeMode() {
@@ -72,6 +65,12 @@ public class NewThermostatModel {
         } else {
             currentMode = NIGHT;
             currentTemp = nightTemp;
+            // switch to the next when earlier period is ended
+            if (schedule.getNextDayPeriod(day, currentPeriod) != null) {
+                currentPeriod++;
+            } else { // if already next day
+                currentPeriod = 0;
+            }
         }
     }
 
