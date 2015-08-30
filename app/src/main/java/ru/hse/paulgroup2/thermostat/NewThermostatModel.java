@@ -54,7 +54,7 @@ public class NewThermostatModel {
             }
         }
 
-        if (!locked && schedule.needTempUpdate(day, new HourMinute(hour, minute), currentMode)) {
+        if (!locked && schedule.needTempUpdate(day, new Time(hour, minute), currentMode)) {
             changeMode();
         }
 
@@ -132,7 +132,7 @@ public class NewThermostatModel {
         return locked;
     }
 
-    public boolean addPeriod(int dayOfWeek, HourMinute dayBegin, HourMinute dayEnd) {
+    public boolean addPeriod(int dayOfWeek, Time dayBegin, Time dayEnd) {
         return schedule.addPeriod(dayOfWeek, dayBegin, dayEnd);
     }
 
@@ -142,15 +142,15 @@ public class NewThermostatModel {
     }
 
     @Deprecated
-    public Pair<HourMinute, HourMinute> getNextDayPeriod(int dayOfWeek, int currentPeriod) {
+    public Pair<Time, Time> getNextDayPeriod(int dayOfWeek, int currentPeriod) {
         return schedule.getNextDayPeriod(dayOfWeek, currentPeriod);
     }
 
-    public Pair<HourMinute, HourMinute> getNightPeriod(int dayOfWeek, int currentPeriod) {
+    public Pair<Time, Time> getNightPeriod(int dayOfWeek, int currentPeriod) {
         return schedule.getNightPeriod(dayOfWeek, currentPeriod);
     }
 
-    public ArrayList<Pair<HourMinute, HourMinute>> getFullSchedule(int day) {
+    public ArrayList<Pair<Time, Time>> getFullSchedule(int day) {
         return schedule.getFullSchedule(day);
     }
 }
