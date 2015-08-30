@@ -27,14 +27,17 @@ public class NewThermostatModel {
     private int currentMode;
     private boolean locked;
 
-    private Thread timer = new Thread(() -> {
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(200);
-                tick();
-            } catch (InterruptedException ex) {
-                System.out.println("Internal thread in Timer was interrupted");
-                break;
+    private Thread timer = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(200);
+                    tick();
+                } catch (InterruptedException ex) {
+                    System.out.println("Internal thread in Timer was interrupted");
+                    break;
+                }
             }
         }
     });

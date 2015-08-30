@@ -16,8 +16,9 @@ public class NewThermostatSchedule implements Serializable {
 
     public NewThermostatSchedule() {
         schedule = new ArrayList<>(7);
-        for (ArrayList<Pair<Time,Time>> dayOfWeek : schedule) {
-            dayOfWeek = new ArrayList<>(5);
+        for (int i = 0; i < 7; i++) {
+            ArrayList<Pair<Time, Time>> dayOfWeek = new ArrayList<>(5);
+            schedule.add(dayOfWeek);
             //dayOfWeek.add(new Pair<>(new HourMinute(0, 0), new HourMinute(23, 59)));
         }
     }
