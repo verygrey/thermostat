@@ -97,6 +97,7 @@ public class Thermostat extends Activity {
 
     public void changeVacation(View view) {
         if (vacationMode) {
+            setCurrentModeImage();
             Toast.makeText(this, "Vacation mode is disabled", Toast.LENGTH_SHORT).show();
         } else {
             currentModeView.setImageResource(R.drawable.biglockpic);
