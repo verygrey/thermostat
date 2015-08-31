@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 
@@ -181,7 +180,7 @@ public class Thermostat extends Activity {
 
     public void setSchedule(View view) {
         Toast.makeText(this, "UNFORTUNATELY NOT WORKING\n WE BROKEN IT ._.", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(Thermostat.this, Schedule.class);
+        Intent intent = new Intent(Thermostat.this, NewSchedule.class);
         intent.putExtra("SCHEDULE", schedule);
         startActivity(intent);
     }

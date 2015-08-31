@@ -144,15 +144,15 @@ public class NewThermostatModel {
     }
 
     @Deprecated
-    public Pair<Time, Time> getNextDayPeriod(int dayOfWeek, int currentPeriod) {
+    public Period getNextDayPeriod(int dayOfWeek, int currentPeriod) {
         return schedule.getNextDayPeriod(dayOfWeek, currentPeriod);
     }
 
-    public Pair<Time, Time> getNightPeriod(int dayOfWeek, int currentPeriod) {
+    public Period getNightPeriod(int dayOfWeek, int currentPeriod) {
         return schedule.getNightPeriod(dayOfWeek, currentPeriod);
     }
 
-    public ArrayList<Pair<Time, Time>> getFullSchedule(int day) {
+    public ArrayList<Period> getFullSchedule(int day) {
         return schedule.getFullSchedule(day);
     }
 }

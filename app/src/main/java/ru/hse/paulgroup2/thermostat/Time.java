@@ -1,11 +1,12 @@
 package ru.hse.paulgroup2.thermostat;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 /**
  * Created by Ivan on 26.08.2015.
  */
-public class Time {
+public class Time implements Serializable{
     private int hour;
     private int minute;
 
@@ -56,5 +57,11 @@ public class Time {
             }
         }
         return this;
+    }
+
+    @Override
+    public String toString() {
+        String min = (minute < 10) ? "0" + minute : "" + minute;
+        return "" + hour + ":" + min;
     }
 }

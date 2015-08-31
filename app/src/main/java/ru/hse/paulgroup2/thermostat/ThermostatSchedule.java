@@ -102,7 +102,7 @@ public class ThermostatSchedule implements Serializable{
                 return dayperiods.get(i).get(2);
             }
         }
-        throw new IllegalStateException("Incorrect schedule state: not found time");
+        throw new IllegalStateException("Incorrect clonedSchedule state: not found time");
     }
 
     public double getTemp(int hour, int minute, int day) {
