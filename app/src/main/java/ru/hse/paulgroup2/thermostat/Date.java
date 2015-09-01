@@ -7,16 +7,16 @@ import java.util.Calendar;
  */
 public class Date {
 
-    static final String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+    static final String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
     int hour;
     int minute;
     int day;
 
     public Date(Calendar calendar) {
-        this.hour = calendar.get(Calendar.HOUR);
+        this.hour = calendar.get(Calendar.HOUR_OF_DAY);
         this.minute = calendar.get(Calendar.MINUTE);
-        this.day = calendar.get(Calendar.DAY_OF_WEEK);    }
+        this.day = calendar.get(Calendar.DAY_OF_WEEK) - 1;    }
 
     public void addMinute() {
         minute++;
@@ -26,8 +26,8 @@ public class Date {
             if (hour == 24) {
                 hour = 0;
                 day++;
-                if (day == 8) {
-                    day = 1;
+                if (day == 7) {
+                    day = 0;
                 }
             }
         }
@@ -40,6 +40,6 @@ public class Date {
             min += "0";
         }
         min += minute;
-        return days[day - 1] + " " + hour + ":" + min;
+        return days[day] + " " + hour + ":" + min;
     }
 }
