@@ -41,7 +41,7 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
      */
     ViewPager mViewPager;
 
-    NewThermostatSchedule schedule;
+    MyNewTSchedule schedule;
     ArrayList<LinkedList<PairPeriod>> allSchedulePeriods;
 
     @Override
@@ -50,7 +50,7 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
         setContentView(R.layout.activity_new_schedule);
 
         Intent intent = getIntent();
-        schedule = (NewThermostatSchedule) intent.getSerializableExtra("SCHEDULE");
+        schedule = (MyNewTSchedule) intent.getSerializableExtra("SCHEDULE");
         allSchedulePeriods = new ArrayList<>(7);
 
         for (int day = 0; day < 7; day++) {
@@ -106,17 +106,17 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_schedule, menu);
+//        getMenuInflater().inflate(R.menu.menu_schedule, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        int id = item.getItemId();
+//
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -215,24 +215,6 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
         LinkedList<PairPeriod> allDayPairPeriods;
         LinkedList<View> allViews;
 
-//        private void addPeriodFromList(LayoutInflater inflater, ViewGroup container, final int number) {
-//            final ViewGroup newPeriod =
-//                    (ViewGroup) inflater.inflate(R.layout.list_item_new_example, container, false);
-//
-//            ((TextView) newPeriod.findViewById(R.id.daytime)).setText("DAY " + allDayPairPeriods.get(number).first.toString());
-//            ((TextView) newPeriod.findViewById(R.id.nighttime)).setText("NIGHT " + allDayPairPeriods.get(number).second.toString());
-//
-//            newPeriod.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    allDayPairPeriods.remove(numberPeriod);
-//                    periodContainer.removeView(newPeriod);
-//                }
-//            });
-//
-//            periodContainer.addView(newPeriod, numberOfPeriods++);
-//        }
-
         private void collapsePeriod(int index) {
             Time newNightEnd = allDayPairPeriods.get(index).night.end;
             allDayPairPeriods.remove(index);
@@ -322,7 +304,7 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
             View rootView = inflater.inflate(R.layout.fragment_new_schedule, container, false);
             periodContainer = (LinearLayout) rootView.findViewById(R.id.periodsContainer);
 
-            allDayPairPeriods = environment.allSchedulePeriods.get(day);
+            allDayPairPeriods = environment.allSchedulePeriods.get(day - 1);
 
             allViews = new LinkedList<>();
             for (int pair = 0; pair < allDayPairPeriods.size(); pair++) {
@@ -355,5 +337,20 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
             });
             return rootView;
         }
+    }
+
+    public void exportSchedule(View view) {
+        Intent answerIntent = new Intent();
+        MyNewTSchedule nts = new MyNewTSchedule();
+        for (int day = 0; day < allSchedulePeriods.size(); day++) {
+            LinkedList<PairPeriod> dayPeriods = allSchedulePeriods.get(day);
+            for (PairPeriod pair: dayPeriods) {
+                nts.addPeriodToEnd(day, pair.day.begin, pair.day.end);
+            }
+        }
+        schedule = nts;
+        answerIntent.putExtra("SCHEDULE", nts);
+        setResult(RESULT_OK, answerIntent);
+        finish();
     }
 }

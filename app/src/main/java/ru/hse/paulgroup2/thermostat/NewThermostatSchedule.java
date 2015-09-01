@@ -19,7 +19,6 @@ public class NewThermostatSchedule implements Serializable {
             schedule.add(dayOfWeek);
             //dayOfWeek.add(new Pair<>(new HourMinute(0, 0), new HourMinute(23, 59)));
         }
-        addPeriod(1, new Time(12, 0), new Time(13, 0));
     }
 
     public boolean addPeriod(int dayOfWeek, Time dayBegin, Time dayEnd) {
@@ -100,7 +99,7 @@ public class NewThermostatSchedule implements Serializable {
 
     public boolean needTempUpdate(int dayOfWeek, Time currentTime, int mode) {
         boolean insidePeriod = false;
-        for (Period period : schedule.get(dayOfWeek)) {
+        for (Period period : schedule.get(dayOfWeek - 1)) {
             if (currentTime.insidePeriod(period.begin, period.end)) {
                 insidePeriod = true;
             }

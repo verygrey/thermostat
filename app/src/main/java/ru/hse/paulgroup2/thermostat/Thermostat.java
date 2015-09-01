@@ -22,7 +22,7 @@ public class Thermostat extends Activity {
 
     Date currentTime = new Date(Calendar.getInstance());
 
-    NewThermostatSchedule schedule = new NewThermostatSchedule();
+    MyNewTSchedule schedule = new MyNewTSchedule();
 
     Temperature dayTemperature = new Temperature(10, 0);
     Temperature nightTemperature = new Temperature(15, 0);
@@ -82,15 +82,6 @@ public class Thermostat extends Activity {
         setViewTemp(currentTempView, currentTemperature);
     }
     private void tempCorrect() {
-//        if (vacationMode) {
-//             NOTHING!
-//        } else {
-//            if (currentMode == NIGHT) {
-//                currentTemperature.correctTo(1, nightTemperature);
-//            } else {
-//
-//            }
-//        }
     }
 
     private Runnable tickEvent = new Runnable() {
@@ -111,11 +102,7 @@ public class Thermostat extends Activity {
     };
 
     public void setNewUserTemp(View view) {
-//        if (!vacationMode) {
-//            userTemperature = new Temperature(13, 3);
-//            currentTemperature = userTemperature;
-//            userTempView.setText(userTemperature.toString());
-//        }
+
     }
 
     public void changeVacation(View view) {
@@ -146,10 +133,15 @@ public class Thermostat extends Activity {
 
     public void onUserTemp(View view) {
         if (!vacationMode) {
-            currentTemperature = userTemperature;
-            setCurrentModeImage();
-            currentModeView.setImageResource(R.drawable.biguserpic);
-            Toast.makeText(this, "User mode enabled", Toast.LENGTH_SHORT).show();
+            if (currentTemperature != userTemperature) {
+                currentTemperature = userTemperature;
+                currentModeView.setImageResource(R.drawable.biguserpic);
+                Toast.makeText(this, "User mode enabled", Toast.LENGTH_SHORT).show();
+            } else {
+                currentTemperature = currentMode == NIGHT ? nightTemperature : dayTemperature;
+                setCurrentModeImage();
+                Toast.makeText(this, "User mode disabled", Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(this, "Vacation mode is already enabled", Toast.LENGTH_SHORT).show();
         }
@@ -177,11 +169,24 @@ public class Thermostat extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    static final int GET_SCHEDULE = 0;
 
     public void setSchedule(View view) {
         Toast.makeText(this, "UNFORTUNATELY NOT WORKING\n WE BROKEN IT ._.", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(Thermostat.this, NewSchedule.class);
         intent.putExtra("SCHEDULE", schedule);
-        startActivity(intent);
+        startActivityForResult(intent, GET_SCHEDULE);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GET_SCHEDULE) {
+            if (resultCode == RESULT_OK) {
+                MyNewTSchedule nts = (MyNewTSchedule)data.getSerializableExtra("SCHEDULE");
+                schedule = nts;
+            }
+        }
     }
 }
