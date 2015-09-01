@@ -20,7 +20,7 @@ public class Time implements Serializable{
         this.minute = minute;
     }
 
-    public boolean isBetter(Time other) {
+    public boolean isLater(Time other) {
         if ((this.minute + this.hour * 60) > (other.minute + other.hour * 60)) {
             return true;
         }
