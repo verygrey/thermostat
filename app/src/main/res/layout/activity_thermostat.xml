@@ -72,7 +72,7 @@
                 android:orientation="vertical"
                 >
 
-                <ImageView
+                <ImageButton
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="DAY"
@@ -80,6 +80,7 @@
                     android:src="@drawable/bigsunpic"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:onClick="setDayTemp"
                     />
 
                 <TextView
@@ -102,7 +103,7 @@
                 android:orientation="vertical"
                 >
 
-                <ImageView
+                <ImageButton
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="NIGHT"
@@ -110,7 +111,9 @@
                     android:textSize="30dp"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:onClick="setNightTemp"
                     />
+
                 <TextView
                     android:id="@+id/nighttemp"
                     android:layout_width="match_parent"

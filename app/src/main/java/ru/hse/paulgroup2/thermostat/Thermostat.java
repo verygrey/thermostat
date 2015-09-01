@@ -101,10 +101,6 @@ public class Thermostat extends Activity {
         }
     };
 
-    public void setNewUserTemp(View view) {
-
-    }
-
     public void changeVacation(View view) {
         if (vacationMode) {
             setCurrentModeTemp();
@@ -134,6 +130,7 @@ public class Thermostat extends Activity {
     public void onUserTemp(View view) {
         if (!vacationMode) {
             if (currentTemperature != userTemperature) {
+                setUserTemp(view);
                 currentTemperature = userTemperature;
                 currentModeView.setImageResource(R.drawable.biguserpic);
                 Toast.makeText(this, "User mode enabled", Toast.LENGTH_SHORT).show();
@@ -169,10 +166,9 @@ public class Thermostat extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    static final int GET_SCHEDULE = 0;
+    static final int GET_SCHEDULE = 0, GET_TEMP = 1;
 
     public void setSchedule(View view) {
-        Toast.makeText(this, "UNFORTUNATELY NOT WORKING\n WE BROKEN IT ._.", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(Thermostat.this, NewSchedule.class);
         intent.putExtra("SCHEDULE", schedule);
         startActivityForResult(intent, GET_SCHEDULE);
@@ -187,6 +183,49 @@ public class Thermostat extends Activity {
                 MyNewTSchedule nts = (MyNewTSchedule)data.getSerializableExtra("SCHEDULE");
                 schedule = nts;
             }
+        } else if (requestCode == GET_TEMP) {
+            if (resultCode == RESULT_OK) {
+                Temperature temperature = (Temperature)data.getSerializableExtra("TEMPERATURE");
+                String type = data.getStringExtra("TYPE");
+                switch (type) {
+                    case "DAY": {
+                        dayTemperature = temperature;
+                        dayTempView.setText(dayTemperature.toString());
+                        break;
+                    }
+                    case "NIGHT": {
+                        nightTemperature = temperature;
+                        nightTempView.setText(nightTemperature.toString());
+                        break;
+                    }
+                    case "USER": {
+                        userTemperature = temperature;
+                        break;
+                    }
+                }
+                setCurrentModeTemp();
+            }
         }
+    }
+
+    public void setDayTemp(View view) {
+        Intent intent = new Intent(Thermostat.this, SetTemperature.class);
+        intent.putExtra("TYPE", "DAY");
+        intent.putExtra("NOW", dayTemperature);
+        startActivityForResult(intent, GET_TEMP);
+    }
+
+    public void setNightTemp(View view) {
+        Intent intent = new Intent(Thermostat.this, SetTemperature.class);
+        intent.putExtra("TYPE", "NIGHT");
+        intent.putExtra("NOW", nightTemperature);
+        startActivityForResult(intent, GET_TEMP);
+    }
+
+    public void setUserTemp(View view) {
+        Intent intent = new Intent(Thermostat.this, SetTemperature.class);
+        intent.putExtra("TYPE", "USER");
+        intent.putExtra("NOW", userTemperature);
+        startActivityForResult(intent, GET_TEMP);
     }
 }

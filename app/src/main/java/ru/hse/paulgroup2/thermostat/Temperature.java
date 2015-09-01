@@ -1,9 +1,11 @@
 package ru.hse.paulgroup2.thermostat;
 
+import java.io.Serializable;
+
 /**
  * Created by verygrey on 30.08.2015.
  */
-public class Temperature {
+public class Temperature implements Serializable {
     int whole;
     int frac;
 

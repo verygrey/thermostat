@@ -331,7 +331,6 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
                             tpdEnd.show();
                         }
                     }, 12, 0, true);
-//                    tpdBegin.create();
                     tpdBegin.show();
                 }
             });

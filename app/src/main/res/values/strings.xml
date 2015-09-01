@@ -19,5 +19,6 @@
     <string name="saturday">Sa</string>
     <string name="title_activity_set_schedule">SetSchedule</string>
     <string name="title_activity_new_schedule">NewSchedule</string>
+    <string name="title_activity_set_temp">SetTempActivity</string>
 
 </resources>
