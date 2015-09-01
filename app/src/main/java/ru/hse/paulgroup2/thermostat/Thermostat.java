@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 
@@ -23,7 +22,7 @@ public class Thermostat extends Activity {
 
     Date currentTime = new Date(Calendar.getInstance());
 
-    NewThermostatSchedule schedule = new NewThermostatSchedule();
+    MyNewTSchedule schedule = new MyNewTSchedule();
 
     Temperature dayTemperature = new Temperature(10, 0);
     Temperature nightTemperature = new Temperature(15, 0);
@@ -34,7 +33,7 @@ public class Thermostat extends Activity {
 
     int currentMode = NIGHT;
 
-    boolean vacationMode;
+    boolean vacationMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +73,17 @@ public class Thermostat extends Activity {
         }
     }
 
+    private void setCurrentModeTemp() {
+        if (currentMode == NIGHT) {
+            currentTemperature = nightTemperature;
+        } else {
+            currentTemperature = dayTemperature;
+        }
+        setViewTemp(currentTempView, currentTemperature);
+    }
+    private void tempCorrect() {
+    }
+
     private Runnable tickEvent = new Runnable() {
         @Override
         public void run() {
@@ -81,22 +91,23 @@ public class Thermostat extends Activity {
             if (!vacationMode) {
                 if (schedule.needTempUpdate(currentTime.day, new Time(currentTime.hour, currentTime.minute), currentMode)) {
                     currentMode = 1 - currentMode; // day->night, night->day
+                    setCurrentModeTemp();
                     setCurrentModeImage();
                 }
             }
+            tempCorrect();
+            currentTempView.setText(currentTemperature.toString());
             currentTimeView.setText(currentTime.toString());
         }
     };
 
     public void setNewUserTemp(View view) {
-        //Todo: add choose temp
-        Toast.makeText(this, "UNFORTUNATELY NOT WORKING\n WE BROKEN IT ._.\nTHIS BUTTON SET RANDOM TEMPERATURE", Toast.LENGTH_LONG).show();
-        userTemperature = new Temperature(13, 3);
-        userTempView.setText(userTemperature.toString());
+
     }
 
     public void changeVacation(View view) {
         if (vacationMode) {
+            setCurrentModeTemp();
             setCurrentModeImage();
             Toast.makeText(this, "Vacation mode is disabled", Toast.LENGTH_SHORT).show();
         } else {
@@ -108,11 +119,8 @@ public class Thermostat extends Activity {
 
     public void initFieldsAndViews() {
         vacationMode = false;
-        if (currentMode == DAY) {
-            currentModeView.setImageResource(R.drawable.bigsunpic);
-        } else {
-            currentModeView.setImageResource(R.drawable.bigmoonpic);
-        }
+        setCurrentModeTemp();
+        setCurrentModeImage();
         setViewTemp(nightTempView, nightTemperature);
         setViewTemp(dayTempView, dayTemperature);
         setViewTemp(currentTempView, currentTemperature);
@@ -124,8 +132,19 @@ public class Thermostat extends Activity {
     }
 
     public void onUserTemp(View view) {
-        currentModeView.setImageResource(R.drawable.biguserpic);
-        Toast.makeText(this, "User mode enabled", Toast.LENGTH_SHORT).show();
+        if (!vacationMode) {
+            if (currentTemperature != userTemperature) {
+                currentTemperature = userTemperature;
+                currentModeView.setImageResource(R.drawable.biguserpic);
+                Toast.makeText(this, "User mode enabled", Toast.LENGTH_SHORT).show();
+            } else {
+                currentTemperature = currentMode == NIGHT ? nightTemperature : dayTemperature;
+                setCurrentModeImage();
+                Toast.makeText(this, "User mode disabled", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Vacation mode is already enabled", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -150,11 +169,24 @@ public class Thermostat extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    static final int GET_SCHEDULE = 0;
 
     public void setSchedule(View view) {
         Toast.makeText(this, "UNFORTUNATELY NOT WORKING\n WE BROKEN IT ._.", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(Thermostat.this, Schedule.class);
+        Intent intent = new Intent(Thermostat.this, NewSchedule.class);
         intent.putExtra("SCHEDULE", schedule);
-        startActivity(intent);
+        startActivityForResult(intent, GET_SCHEDULE);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GET_SCHEDULE) {
+            if (resultCode == RESULT_OK) {
+                MyNewTSchedule nts = (MyNewTSchedule)data.getSerializableExtra("SCHEDULE");
+                schedule = nts;
+            }
+        }
     }
 }

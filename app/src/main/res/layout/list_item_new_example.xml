@@ -25,7 +25,7 @@
 
     <!-- Dummy text view that will display the name of a random country. -->
     <TextView
-        android:id="@+id/time"
+        android:id="@+id/daytime"
         style="?android:textAppearanceMedium"
         android:layout_width="0dp"
         android:layout_weight="1"
@@ -39,5 +39,13 @@
         android:src="@drawable/deletepic"
         android:background="?android:selectableItemBackground"
         />
+
+    <TextView
+        android:id="@+id/nighttime"
+        style="?android:textAppearanceMedium"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:paddingLeft="?android:listPreferredItemPaddingLeft" />
 
 </LinearLayout>
