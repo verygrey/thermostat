@@ -26,7 +26,7 @@ public class Thermostat extends Activity {
 
     Temperature dayTemperature = new Temperature(10, 0);
     Temperature nightTemperature = new Temperature(15, 0);
-    Temperature userTemperature = new Temperature(4, 2);
+    Temperature userTemperature = new Temperature(20, 0);
     Temperature currentTemperature = new Temperature(9, 9);
 
     static final int NIGHT = 0, DAY = 1;
@@ -131,8 +131,6 @@ public class Thermostat extends Activity {
         if (!vacationMode) {
             if (currentTemperature != userTemperature) {
                 setUserTemp(view);
-                currentTemperature = userTemperature;
-                currentModeView.setImageResource(R.drawable.biguserpic);
                 Toast.makeText(this, "User mode enabled", Toast.LENGTH_SHORT).show();
             } else {
                 currentTemperature = currentMode == NIGHT ? nightTemperature : dayTemperature;
@@ -191,19 +189,30 @@ public class Thermostat extends Activity {
                     case "DAY": {
                         dayTemperature = temperature;
                         dayTempView.setText(dayTemperature.toString());
+                        if (currentMode == DAY) {
+                            currentTemperature = dayTemperature;
+                            currentTempView.setText(currentTemperature.toString());
+                        }
                         break;
                     }
                     case "NIGHT": {
                         nightTemperature = temperature;
                         nightTempView.setText(nightTemperature.toString());
+                        if (currentMode == NIGHT) {
+                            currentTemperature = nightTemperature;
+                            currentTempView.setText(currentTemperature.toString());
+                        }
                         break;
                     }
                     case "USER": {
                         userTemperature = temperature;
+                        userTempView.setText(userTemperature.toString());
+                        currentTemperature = userTemperature;
+                        currentModeView.setImageResource(R.drawable.biguserpic);
                         break;
                     }
                 }
-                setCurrentModeTemp();
+
             }
         }
     }

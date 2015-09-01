@@ -267,6 +267,12 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
         }
 
         boolean addNewPairPeriod(LayoutInflater inflater, Period dayPeriod) {
+            if (dayPeriod.begin.isLater(dayPeriod.end)) {
+                return false;
+            }
+            if (allDayPairPeriods.size() == 5) {
+                return false;
+            }
             for (int index = 0; index < allDayPairPeriods.size(); index++) {
                 if (collapse(allDayPairPeriods.get(index).day, dayPeriod)) {
                     return false;
