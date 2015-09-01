@@ -172,7 +172,7 @@ public class Thermostat extends Activity {
     static final int GET_SCHEDULE = 0;
 
     public void setSchedule(View view) {
-        Toast.makeText(this, "UNFORTUNATELY NOT WORKING\n WE BROKEN IT ._.", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "UNFORTUNATELY NOT WORKING\n WE BROKEN IT ._.", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(Thermostat.this, NewSchedule.class);
         intent.putExtra("SCHEDULE", schedule);
         startActivityForResult(intent, GET_SCHEDULE);
