@@ -1,7 +1,5 @@
 package ru.hse.paulgroup2.thermostat;
 
-import android.util.Pair;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -25,7 +23,7 @@ public class NewThermostatSchedule implements Serializable {
     }
 
     public boolean addPeriod(int dayOfWeek, Time dayBegin, Time dayEnd) {
-        if (isFull(dayOfWeek) || dayBegin.isBetter(dayEnd) || overlaps(dayOfWeek, dayBegin, dayEnd)) {
+        if (isFull(dayOfWeek) || dayBegin.isLater(dayEnd) || overlaps(dayOfWeek, dayBegin, dayEnd)) {
             return false;
         }
         schedule.get(dayOfWeek).add(new Period(dayBegin, dayEnd));
@@ -53,7 +51,7 @@ public class NewThermostatSchedule implements Serializable {
         int i, j;
         for (i = 1; i < daySchedule.size(); i++) {
             key = daySchedule.get(i);
-            for (j = i - 1; j >= 0 && key.begin.isBetter(daySchedule.get(j).begin); j--) {
+            for (j = i - 1; j >= 0 && key.begin.isLater(daySchedule.get(j).begin); j--) {
                 daySchedule.set(j + 1, daySchedule.get(j));
             }
             daySchedule.set(j + 1, key);
@@ -67,24 +65,24 @@ public class NewThermostatSchedule implements Serializable {
         if (size == 0) {
             return false;
         }
-        if (currentDay.get(0).begin.isBetter(dayEnd)) {
+        if (currentDay.get(0).begin.isLater(dayEnd)) {
             return false;
         }
-        else if (dayBegin.isBetter(currentDay.get(size - 1).end)) {
+        else if (dayBegin.isLater(currentDay.get(size - 1).end)) {
             return false;
         }
         else {
             for (Period period : currentDay) {
                 // ...|...|... or  ...|.._|___
-                if (period.begin.isBetter(dayBegin) && dayEnd.isBetter(period.begin)) {
+                if (period.begin.isLater(dayBegin) && dayEnd.isLater(period.begin)) {
                     return true;
                 }
                 // ___|...|___
-                if (dayBegin.isBetter(period.begin) && period.end.isBetter(dayEnd)) {
+                if (dayBegin.isLater(period.begin) && period.end.isLater(dayEnd)) {
                     return true;
                 }
                 // ___|_..|... or ...|...|...
-                if (period.end.isBetter(dayBegin) && dayEnd.isBetter(period.end)) {
+                if (period.end.isLater(dayBegin) && dayEnd.isLater(period.end)) {
                     return true;
                 }
             }
@@ -120,7 +118,7 @@ public class NewThermostatSchedule implements Serializable {
      * @return null if there are no period day periods today
      */
     public Period getNextDayPeriod(int dayOfWeek, int currentPeriod) {
-        if (schedule.get(dayOfWeek).size() > currentPeriod) {
+        if (schedule.get(dayOfWeek).size() > currentPeriod + 1) {
             return schedule.get(dayOfWeek).get(currentPeriod + 1);
         } else {
             return null;
@@ -141,9 +139,13 @@ public class NewThermostatSchedule implements Serializable {
      * @return period of night after current day period
      */
     public Period getNightPeriod(int dayOfWeek, int currentPeriod) {
-        Time begin = schedule.get(dayOfWeek).get(currentPeriod).end;
+        Time begin = schedule.get(dayOfWeek).get(currentPeriod).end.minuteAfter();
         Time end = getBeginOfNextDayPeriod(dayOfWeek, currentPeriod);
-        return new Period(begin.add(1), end.subtract(1));
+        if (end == null) {
+            end = new Time(0, 0);
+        }
+        end = end.minuteBefore();
+        return new Period(begin, end);
     }
 
     /**
@@ -158,11 +160,11 @@ public class NewThermostatSchedule implements Serializable {
         }
         ArrayList<Period> fullSchedule = new ArrayList<>();
         int period = 0;
-        do {
+        while (period < schedule.get(day).size()) {
             fullSchedule.add(schedule.get(day).get(period));
             fullSchedule.add(getNightPeriod(day, period));
             period++;
-        } while (period < schedule.size());
+        }
         return fullSchedule;
     }
 }

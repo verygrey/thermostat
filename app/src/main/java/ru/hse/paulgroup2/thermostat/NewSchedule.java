@@ -10,12 +10,10 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class NewSchedule extends Activity implements ActionBar.TabListener {
 
@@ -43,14 +42,31 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
     ViewPager mViewPager;
 
     NewThermostatSchedule schedule;
+    ArrayList<LinkedList<PairPeriod>> allSchedulePeriods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule);
+        setContentView(R.layout.activity_new_schedule);
 
         Intent intent = getIntent();
         schedule = (NewThermostatSchedule) intent.getSerializableExtra("SCHEDULE");
+        allSchedulePeriods = new ArrayList<>(7);
+
+        for (int day = 0; day < 7; day++) {
+
+            ArrayList<Period> schedulePeriods = schedule.getFullSchedule(day);
+            LinkedList<PairPeriod> dayPairPeriods = new LinkedList<>();
+
+            for (int numberPeriod = 0; numberPeriod < schedulePeriods.size(); numberPeriod += 2) {
+                Period dayPeriod = schedulePeriods.get(numberPeriod);
+                Period nightPeriod = schedulePeriods.get(numberPeriod + 1);
+                PairPeriod pairPeriod = new PairPeriod(dayPeriod, nightPeriod);
+                dayPairPeriods.add(pairPeriod);
+            }
+
+            allSchedulePeriods.add(dayPairPeriods);
+        }
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -183,7 +199,6 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
             args.putInt(ARG_DAY_NUMBER, sectionNumber);
             fragment.setArguments(args);
             fragment.day = sectionNumber;
-            fragment.clonedSchedule = linkedActivity.schedule;
             fragment.environment = linkedActivity;
             return fragment;
         }
@@ -193,25 +208,24 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
 
         int day;
 
-        Activity environment;
-        NewThermostatSchedule clonedSchedule;
+        NewSchedule environment;
 
         LinearLayout periodContainer;
 
-        LinkedList<PairPeriod> allPairPeriods;
+        LinkedList<PairPeriod> allDayPairPeriods;
         LinkedList<View> allViews;
 
 //        private void addPeriodFromList(LayoutInflater inflater, ViewGroup container, final int number) {
 //            final ViewGroup newPeriod =
 //                    (ViewGroup) inflater.inflate(R.layout.list_item_new_example, container, false);
 //
-//            ((TextView) newPeriod.findViewById(R.id.daytime)).setText("DAY " + allPairPeriods.get(number).first.toString());
-//            ((TextView) newPeriod.findViewById(R.id.nighttime)).setText("NIGHT " + allPairPeriods.get(number).second.toString());
+//            ((TextView) newPeriod.findViewById(R.id.daytime)).setText("DAY " + allDayPairPeriods.get(number).first.toString());
+//            ((TextView) newPeriod.findViewById(R.id.nighttime)).setText("NIGHT " + allDayPairPeriods.get(number).second.toString());
 //
 //            newPeriod.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View view) {
-//                    allPairPeriods.remove(numberPeriod);
+//                    allDayPairPeriods.remove(numberPeriod);
 //                    periodContainer.removeView(newPeriod);
 //                }
 //            });
@@ -220,9 +234,11 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
 //        }
 
         private void collapsePeriod(int index) {
-            Time newNightEnd = allPairPeriods.get(index).night.end;
-            allPairPeriods.remove(index);
-            allPairPeriods.get(index - 1).night.end = newNightEnd;
+            Time newNightEnd = allDayPairPeriods.get(index).night.end;
+            allDayPairPeriods.remove(index);
+            if (index != 0) {
+                allDayPairPeriods.get(index - 1).night.end = newNightEnd;
+            }
         }
 
         public ViewGroup createPairPeriodView(LayoutInflater inflater, PairPeriod pair, final int index) {
@@ -250,46 +266,74 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
         void deletePairPeriodView(ViewGroup view) {
             int index = allViews.indexOf(view);
             allViews.remove(index);
-            collapsePeriod(index);
             periodContainer.removeView(view);
+            collapsePeriod(index);
+            if (index != 0) {
+                ((TextView) allViews.get(index - 1).findViewById(R.id.nighttime)).setText("NIGHT: " + allDayPairPeriods.get(index - 1).night.toString());
+            }
         }
 
-        PairPeriod getNewPairPeriod(Period dayPeriod) {
-            for (int index = 0; index < allViews.size(); index++) {
-//                if (allViews.get(index))
+        boolean inside(Time time, Period period) {
+            return period.begin.toInt() <= time.toInt() && time.toInt() <= period.end.toInt();
+        }
+
+        boolean collapse(Period one, Period two) {
+            if (inside(one.begin, two) || inside(one.end, two) || inside(two.begin, one) || inside(two.end, one)){
+                return true;
             }
-            return null;
+            return false;
+        }
+
+        boolean addNewPairPeriod(LayoutInflater inflater, Period dayPeriod) {
+            for (int index = 0; index < allDayPairPeriods.size(); index++) {
+                if (collapse(allDayPairPeriods.get(index).day, dayPeriod)) {
+                    return false;
+                }
+            }
+            if (allDayPairPeriods.isEmpty()) {
+                PairPeriod newPP = new PairPeriod(dayPeriod, new Period(dayPeriod.end.minuteAfter(), new Time(23, 59)));
+                allDayPairPeriods.add(0, newPP);
+                periodContainer.addView(createPairPeriodView(inflater, newPP, 0), 0);
+                return true;
+            }
+            if (inside(dayPeriod.begin, new Period(new Time(0, 0), allDayPairPeriods.getFirst().day.begin))) {
+                PairPeriod newPP = new PairPeriod(dayPeriod, new Period(dayPeriod.end.minuteAfter(), allDayPairPeriods.getFirst().day.begin.minuteBefore()));
+                allDayPairPeriods.add(0, newPP);
+                periodContainer.addView(createPairPeriodView(inflater, newPP, 0), 0);
+                return true;
+            }
+            for (int index = 0; index < allDayPairPeriods.size(); index++) {
+                PairPeriod pair = allDayPairPeriods.get(index);
+                if (inside(dayPeriod.begin, pair.night)) {
+                    PairPeriod newPP = new PairPeriod(dayPeriod, new Period(dayPeriod.end.minuteAfter(), pair.night.end));
+                    pair.night.end = dayPeriod.begin.minuteBefore();
+                    ((TextView) allViews.get(index).findViewById(R.id.nighttime)).setText("NIGHT: " + pair.night.toString());
+                    allDayPairPeriods.add(index + 1, newPP);
+                    periodContainer.addView(createPairPeriodView(inflater, newPP, index + 1), index + 1);
+                    return true;
+                }
+            }
+            throw new RuntimeException("FAILFAILFAIL");
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+        public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
             View rootView = inflater.inflate(R.layout.fragment_new_schedule, container, false);
             periodContainer = (LinearLayout) rootView.findViewById(R.id.periodsContainer);
 
-            ArrayList<Period> schedulePeriods = clonedSchedule.getFullSchedule(day);
-            allPairPeriods = new LinkedList<>();
-
-            for (int dayPeriod = 0; dayPeriod < schedulePeriods.size(); dayPeriod += 2) {
-                Period day = schedulePeriods.get(dayPeriod);
-                Period night = schedulePeriods.get(dayPeriod + 1);
-                PairPeriod pairPeriod = new PairPeriod(day, night);
-                allPairPeriods.add(pairPeriod);
-            }
-
-            ////
+            allDayPairPeriods = environment.allSchedulePeriods.get(day);
 
             allViews = new LinkedList<>();
-            for (int pair = 0; pair < allPairPeriods.size(); pair++) {
-                ViewGroup pairPeriodView = createPairPeriodView(inflater, allPairPeriods.get(pair), pair);
+            for (int pair = 0; pair < allDayPairPeriods.size(); pair++) {
+                ViewGroup pairPeriodView = createPairPeriodView(inflater, allDayPairPeriods.get(pair), pair);
                 periodContainer.addView(pairPeriodView, pair);
             }
 
-            ////
-
-            rootView.findViewById(R.id.adddayperiod).setOnClickListener(new View.OnClickListener() {
+            rootView.findViewById(R.id.addperiod).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Toast.makeText(environment, "ADD TIME", Toast.LENGTH_SHORT).show();
                     TimePickerDialog tpdBegin = new TimePickerDialog(environment, new TimePickerDialog.OnTimeSetListener() {
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -299,12 +343,14 @@ public class NewSchedule extends Activity implements ActionBar.TabListener {
                                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                                     final Time end = new Time(hourOfDay, minute);
                                     Period newPeriod = new Period(begin, end);
-                                    PairPeriod newPair = getNewPairPeriod(newPeriod);
-//                                    createPairPeriodView();
+                                    addNewPairPeriod(inflater, newPeriod);
                                 }
                             }, hourOfDay, minute, true);
+                            tpdEnd.show();
                         }
                     }, 12, 0, true);
+//                    tpdBegin.create();
+                    tpdBegin.show();
                 }
             });
             return rootView;

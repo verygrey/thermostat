@@ -64,4 +64,32 @@ public class Time implements Serializable{
         String min = (minute < 10) ? "0" + minute : "" + minute;
         return "" + hour + ":" + min;
     }
+
+    public int toInt() {
+        return hour * 60 + minute;
+    }
+
+    public Time minuteBefore() {
+        if (minute == 0) {
+            if (hour == 0) {
+                return new Time(23, 59);
+            } else {
+                return new Time(hour - 1, 59);
+            }
+        } else {
+            return new Time(hour, minute - 1);
+        }
+    }
+
+    public Time minuteAfter() {
+        if (minute == 59) {
+            if (hour == 23) {
+                return new Time(0, 0);
+            } else {
+                return new Time(hour + 1, 0);
+            }
+        } else {
+            return new Time(hour, minute + 1);
+        }
+    }
 }
