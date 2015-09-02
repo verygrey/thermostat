@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Thermostat.iml" filepath="$PROJECT_DIR$/Thermostat.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/thermostat.iml" filepath="$PROJECT_DIR$/thermostat.iml" />
     </modules>
   </component>
 </project>
